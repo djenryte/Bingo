@@ -38,6 +38,7 @@ socket.on 'connect', ->
 		console.log bingoNumber
 		for index in [0..4]
 			if @board[bingoNumber[0]][index] is parseInt bingoNumber.substring(1)
+				console.log 'match found'
 				columnIndex = LetterToRowIndexMapping bingoNumber[0]
 				
 				#decrement needed cards for specified index of rowSet and columnSet
