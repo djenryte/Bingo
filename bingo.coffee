@@ -29,35 +29,36 @@ socket.on 'connect', ->
 	diagonalSet = [5,5]
 
 	socket.on 'card', (payload)=>
-		console.log 'data', payload
-		@slots = payload.slots
+		console.log 'board', payload
+
+		# store the bingo board
+		@board = payload.slots
 
 	socket.on 'number', (bingoNumber)=>
-		console.log 'data', bingoNumber
+		console.log bingoNumber
 		for index in [0..4]
-			if @slots[bingoNumber[0]][index] is parseInt bingoNumber.substring(1)
-				console.log 'got'
+			if @board[bingoNumber[0]][index] is parseInt bingoNumber.substring(1)
 				columnIndex = LetterToRowIndexMapping bingoNumber[0]
 				
+				#decrement needed cards for specified index of rowSet and columnSet
 				--rowSet[index]
 				--columnSet[columnIndex]
 
 				# decrement needed cards for '\' diagonal
 				if index is columnIndex
-					console.log 'dia1', [index, columnIndex]
 					--diagonalSet[0]
 				# decrement needed cards for '/' diagonal
 				if index + columnIndex is 4
-					console.log 'dia2', [index, columnIndex]
 					--diagonalSet[1]
 				
+				# detect bingo
 				if rowSet[index] is 0 or columnSet[columnIndex] is 0 or diagonalSet[0] is 0 or diagonalSet[1] is 0
 					console.log 'bingo'
 					socket.emit 'bingo'
 
 				# remove from slots so that if the card is drawn again, our rows/columns/diagonals counters
 				# are not affected
-				@slots[bingoNumber[0]][index] = null
+				@board[bingoNumber[0]][index] = null
 
 	socket.on 'win', (message)->
 		console.log 'message', message
